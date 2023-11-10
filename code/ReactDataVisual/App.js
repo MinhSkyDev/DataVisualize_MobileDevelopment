@@ -11,6 +11,7 @@ import {
   ContributionGraph,
   StackedBarChart
 } from "react-native-chart-kit";
+import { Dimensions } from 'react-native';
 import 'react-native-url-polyfill/auto'
 import 'text-encoding-polyfill'
 
@@ -23,36 +24,41 @@ const params = {
 
 const url = "https://api.open-meteo.com/v1/forecast";
 
+const screenWidth = Dimensions.get("window").width;
+
 const chartConfig = {
-  backgroundGradientFrom: "#1E2923",
+  backgroundGradientFrom: "white",
   backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: "#08130D",
-  backgroundGradientToOpacity: 0.5,
-  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+  backgroundGradientTo: "white",
+  backgroundGradientToOpacity: 0,
+  backgroundColor: "white",
+  color: (opacity = 1) => `rgba(34, 139, 34, ${opacity})`,
   strokeWidth: 2, // optional, default 3
   barPercentage: 0.5,
-  useShadowColorFromDataset: false // optional
+  useShadowColorFromDataset: false, // optional
+  fillShadowGradient: '#228b22', 
+  fillShadowGradientOpacity: 1
 };
 
 const LineChartDemo = () => {
   return (
   <View>
-    <Text style={styles.header}>Salary by Position</Text>
+    <Text style={{fontSize: 16, fontWeight: 'bold', margin: 10}}>Salary by Position</Text>
     <LineChart
       data={{
         labels: ["PM", "DEV", "QC", "Tech Lead", "PO", "DevOps"],
         datasets: [
           {
             data: Array.from({length: 6}, () => Math.random() * 100),
-            color: (opacity = 1) => `rgba(255, 0, 255, ${opacity})`,
+            color: (opacity = 1) => `rgba(0, 255, 255, ${opacity})`,
           },
           {
             data: Array.from({length: 6}, () => Math.random() * 100),
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            color: (opacity = 1) => `rgba(0, 0, 240, ${opacity})`,
           }
         ]
       }}
-      width={350} // from react-native
+      width={screenWidth}
       height={220}
       //yAxisLabel="$"
       yAxisSuffix="$"
@@ -72,6 +78,37 @@ const LineChartDemo = () => {
      
     />
   </View>
+  );
+}
+
+const BarChartDemo = () => {
+  const data = {
+    labels: ["January", "February", "March", "April", "May", "June"],
+    datasets: [
+      {
+        data: Array.from({length: 6}, () => Math.round(Math.random() * 100)),
+        color: (opacity = 1) => `rgba(255, 0, 255, ${opacity})`,
+      },
+      {
+        data: Array.from({length: 6}, () => Math.round(Math.random() * 100)),
+        color: (opacity = 1) => `rgba(255, 0, 255, ${opacity})`,
+      },
+
+    ]
+  };
+
+  return (
+    <View>
+      <Text style={{fontSize: 16, fontWeight: 'bold', margin: 10}}>Active Employees by Age</Text>
+      <BarChart
+        //style={graphStyle}
+        data={data}
+        width={screenWidth}
+        height={220}
+        fromZero={true}
+        chartConfig={chartConfig}
+      />
+    </View>
   );
 }
 
@@ -100,18 +137,53 @@ const PieChartDemo = () => {
 
   return (
     <View>
-      <Text style={styles.header}>Terminated Employee by Performance Score</Text>
+      <Text style={{fontSize: 16, fontWeight: 'bold', margin: 10}}>Terminated Employee by Performance Score</Text>
       <PieChart
         data={data}
-        width={350}
+        width={screenWidth}
         height={320}
         chartConfig={chartConfig}
         accessor={"score"}
-        paddingLeft={'50'}
+        paddingLeft={'35'}
         backgroundColor={"none"}
 
       />
     </View>
+  );
+}
+
+const ProgressChartDemo = () => {
+  const data = {
+    labels: ["Swim", "Bike", "Run"], // optional
+    data: [0.4, 0.6, 0.8]
+  };
+
+
+  return (
+    <View>
+      <Text style={{fontSize: 16, fontWeight: 'bold', margin: 10}}>Demo chart</Text>
+      <ProgressChart
+        data={data}
+        width={screenWidth}
+        height={220}
+        strokeWidth={16}
+        radius={32}
+        chartConfig={chartConfig}
+        hideLegend={false}
+      />
+    </View>
+  );
+}
+
+const ContributionGraphDemo = () => {
+  return (
+    <View />
+  );
+}
+
+const StackedBarChartDemo = () => {
+  return (
+    <View />
   );
 }
 
@@ -120,15 +192,15 @@ const renderChart = (nameChart) => {
     case 'LineChart':
       return <LineChartDemo />
     case 'BarChart':
-      return ;
+      return <BarChartDemo />
     case 'PieChart':
       return <PieChartDemo />
     case 'ProgressChart':
-      return;
+      return <ProgressChartDemo />
     case 'ContributionGraph':
-      return;
+      return <ContributionGraphDemo />
     case 'StackedBarChart':
-      return;
+      return <StackedBarChartDemo />
     default:
       return;
   }
@@ -150,8 +222,7 @@ const DropdownComponent = ({data, visualdata}) => {
   };
 
   return (
-    <View style={{backgroundColor: 'white', padding: 16}}>
-      {renderLabel()}
+    <View style={{backgroundColor: 'white'}}>
       <Dropdown
         style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
         placeholderStyle={styles.placeholderStyle}
@@ -248,7 +319,6 @@ export default App;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    padding: 16,
     flex: 1,
     alignContent: 'flex-start',
     justifyContent: 'start',
@@ -256,7 +326,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginVertical: 20,
+    margin: 20,
   },
   dropdown: {
     height: 50,
@@ -264,6 +334,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
+    margin: 16,
   },
   icon: {
     marginRight: 5,
