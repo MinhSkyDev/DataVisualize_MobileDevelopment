@@ -23,7 +23,118 @@ const params = {
 
 const url = "https://api.open-meteo.com/v1/forecast";
 
-const DropdownComponent = ({data}) => {
+const chartConfig = {
+  backgroundGradientFrom: "#1E2923",
+  backgroundGradientFromOpacity: 0,
+  backgroundGradientTo: "#08130D",
+  backgroundGradientToOpacity: 0.5,
+  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+  strokeWidth: 2, // optional, default 3
+  barPercentage: 0.5,
+  useShadowColorFromDataset: false // optional
+};
+
+const LineChartDemo = () => {
+  return (
+  <View>
+    <Text style={styles.header}>Salary by Position</Text>
+    <LineChart
+      data={{
+        labels: ["PM", "DEV", "QC", "Tech Lead", "PO", "DevOps"],
+        datasets: [
+          {
+            data: Array.from({length: 6}, () => Math.random() * 100),
+            color: (opacity = 1) => `rgba(255, 0, 255, ${opacity})`,
+          },
+          {
+            data: Array.from({length: 6}, () => Math.random() * 100),
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          }
+        ]
+      }}
+      width={350} // from react-native
+      height={220}
+      //yAxisLabel="$"
+      yAxisSuffix="$"
+      yAxisInterval={1} // optional, defaults to 1
+      chartConfig={{
+        backgroundColor: "white",
+        backgroundGradientFrom: "white",
+        backgroundGradientTo: "white",
+        decimalPlaces: 2, // optional, defaults to 2dp
+        color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+        style: {
+          borderRadius: 16
+        },
+        useShadowColorFromDataset: true,
+      }}
+     
+    />
+  </View>
+  );
+}
+
+const PieChartDemo = () => {
+
+  const data = [
+    {
+      name: "OnSite",
+      score: 60,
+      color: "orange",
+      legendFontColor: "#000000",
+    },
+    {
+      name: "Remote",
+      score: 30,
+      color: "skyblue",
+      legendFontColor: "#000000",
+    },
+    {
+      name: "Hybrid",
+      score: 10,
+      color: "lightgreen",
+      legendFontColor: "#000000",
+    },
+  ]
+
+  return (
+    <View>
+      <Text style={styles.header}>Terminated Employee by Performance Score</Text>
+      <PieChart
+        data={data}
+        width={350}
+        height={320}
+        chartConfig={chartConfig}
+        accessor={"score"}
+        paddingLeft={'50'}
+        backgroundColor={"none"}
+
+      />
+    </View>
+  );
+}
+
+const renderChart = (nameChart) => {
+  switch (nameChart) {
+    case 'LineChart':
+      return <LineChartDemo />
+    case 'BarChart':
+      return ;
+    case 'PieChart':
+      return <PieChartDemo />
+    case 'ProgressChart':
+      return;
+    case 'ContributionGraph':
+      return;
+    case 'StackedBarChart':
+      return;
+    default:
+      return;
+  }
+}
+
+const DropdownComponent = ({data, visualdata}) => {
   const [value, setValue] = useState(data[0].value);
   const [isFocus, setIsFocus] = useState(false);
 
@@ -62,92 +173,20 @@ const DropdownComponent = ({data}) => {
           setIsFocus(false);
         }}
       />
-       
-      
+      { visualdata && renderChart(data[value].label)}
     </View>
   );
 };
-
-const Chart = () => {
-  return (
-  <View>
-    <Text style={styles.header}>Salary by Position</Text>
-    <LineChart
-      data={{
-        labels: ["PM", "DEV", "QC", "Tech Lead", "PO", "DevOps"],
-        datasets: [
-          {
-            data: [
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100
-            ],
-            color: (opacity = 1) => `rgba(255, 0, 255, ${opacity})`,
-          },
-          {
-            data: [
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100
-            ],
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-          }
-        ]
-      }}
-      width={350} // from react-native
-      height={220}
-      //yAxisLabel="$"
-      yAxisSuffix="$"
-      yAxisInterval={1} // optional, defaults to 1
-      chartConfig={{
-        backgroundColor: "white",
-        backgroundGradientFrom: "white",
-        backgroundGradientTo: "white",
-        decimalPlaces: 2, // optional, defaults to 2dp
-        color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-        style: {
-          borderRadius: 16
-        },
-        useShadowColorFromDataset: true,
-        /*
-        propsForDots: {
-          r: "6",
-          strokeWidth: "2",
-          stroke: "#ffa726"
-        }
-        */
-      }}
-     
-      /*
-      style={{
-        marginVertical: 8,
-        borderRadius: 16
-      }}
-      */
-    />
-  </View>
-  );
-}
 
 const DropDownOption = ({ title = '', data, chart}) => {
   return (
     <View>
       <Text style={styles.header}>{title}</Text>
-      <DropdownComponent data={data}/>
-      {chart && <Chart />} 
+      <DropdownComponent data={data} visualdata={chart}/>
     </View>
   );
 
 }
-
-
 
 const App = () => {
   /*
@@ -168,12 +207,12 @@ const App = () => {
   */
   
   const typeChart = [
-    { label: 'LineChart',         value: '1' },
-    { label: 'BarChart',          value: '2' },
-    { label: 'PieChart',          value: '3' },
-    { label: 'ProgressChart',     value: '4' },
-    { label: 'ContributionGraph', value: '5' },
-    { label: 'StackedBarChart',   value: '6' },
+    { label: 'LineChart',         value: '0' },
+    { label: 'BarChart',          value: '1' },
+    { label: 'PieChart',          value: '2' },
+    { label: 'ProgressChart',     value: '3' },
+    { label: 'ContributionGraph', value: '4' },
+    { label: 'StackedBarChart',   value: '5' },
   ];
 
   const xRotation = [
@@ -196,6 +235,7 @@ const App = () => {
       <DropDownOption title='Dashboard' data={typeChart} chart={true} />
       <DropDownOption title='X-Rotation' data={xRotation} />
       <DropDownOption title='Y-Rotation' data={yRotation} />
+      <Text style={styles.header}> Colour Customization </Text>
     </View>
     </ScrollView>
   );
