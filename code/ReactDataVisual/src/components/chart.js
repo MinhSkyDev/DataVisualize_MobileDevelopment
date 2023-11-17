@@ -124,33 +124,64 @@ export const LineChartDemo = ({ data = {} }) => {
   );
 }
 
-export const BarChartDemo = () => {
-  const data = {
-    labels: ["January", "February", "March", "April", "May", "June"],
-    datasets: [
-      {
-        data: Array.from({ length: 6 }, () => Math.round(Math.random() * 100)),
-        color: (opacity = 1) => `rgba(255, 0, 255, ${opacity})`,
-      },
-      {
-        data: Array.from({ length: 6 }, () => Math.round(Math.random() * 100)),
-        color: (opacity = 1) => `rgba(255, 0, 255, ${opacity})`,
-      },
+export const BarChartDemo = ({ data = {}}) => {
+  const [xFilter, setXFilter] = useState(Const.xRotation[0])
+  const [yFilter, setYFilter] = useState(Const.yRotation[0])
 
-    ]
-  };
+  const datafilter = reportData(data, xFilter.value, yFilter.value)
+  let labels, values;
+
+  if (Object.keys(datafilter).length != 0) {
+    labels = Object.keys(datafilter).map((item) => item.split(' ').join('\n'))
+    console.log(labels)
+    values = Object.values(datafilter)
+  } else {
+    // first render, no data
+    labels = ["18-25", "25-30", "30-35", "35-40", "40-45", "45-50"]
+    values = [20, 45, 28, 80, 99, 43]
+  }
+
+  const datapointwidth = 60;
+  const chartWidth = datapointwidth * labels.length;
+  
+  const fadeAnim = useRef(new Animated.Value(0)).current; // initial value for opacity: 0
+
+  useEffect(() => {
+    fadeAnim.setValue(0); // reset the animation value to 0
+    Animated.timing(
+      fadeAnim,
+      {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }
+    ).start();
+  }, [fadeAnim, labels, values]);
 
   return (
     <View>
-      <Text style={{ fontSize: 16, fontWeight: 'bold', margin: 10 }}>Active Employees by Age</Text>
+      <FilterComponent title='X-Rotation' data={Const.xRotation} onChangeValue={setXFilter} />
+      <FilterComponent title='Y-Rotation' data={Const.yRotation} onChangeValue={setYFilter} />
+      
+      <Text style={{ fontSize: 16, fontWeight: 'bold', margin: 10 }}>{yFilter.label} by {xFilter.label}</Text>
+      <ScrollView horizontal={true}>
       <BarChart
         //style={graphStyle}
-        data={data}
-        width={Const.screenWidth}
+        data={{
+          labels: labels,
+          datasets: [
+            {
+              data: values,
+              color: (opacity = 1) => `rgba(255, 0, 255, ${opacity})`,
+            },
+          ]
+        }}
+        width={chartWidth}
         height={220}
         fromZero={true}
         chartConfig={chartConfig}
       />
+      </ScrollView>
     </View>
   );
 }

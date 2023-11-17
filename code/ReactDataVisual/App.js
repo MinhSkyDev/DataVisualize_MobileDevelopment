@@ -46,7 +46,7 @@ const renderChart = (nameChart) => {
     case 'LineChart':
       return <Chart.LineChartDemo data={data} />
     case 'BarChart':
-      return <Chart.BarChartDemo />
+      return <Chart.BarChartDemo data={data}/>
     case 'PieChart':
       return <Chart.PieChartDemo />
     default:
