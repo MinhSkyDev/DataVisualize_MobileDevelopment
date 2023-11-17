@@ -9,5 +9,8 @@ export const chartConfig = {
   barPercentage: 0.5,
   useShadowColorFromDataset: false, // optional
   fillShadowGradient: '#228b22',
-  fillShadowGradientOpacity: 1
+  fillShadowGradientOpacity: 1,
+  propsForVerticalLabels: {
+    rotation: -15,
+  },
 };

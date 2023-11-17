@@ -53,8 +53,7 @@ export const LineChartDemo = ({ data = {} }) => {
   let labels, values;
 
   if (Object.keys(datafilter).length != 0) {
-    labels = Object.keys(datafilter).map((item) => item.split(' ').join('\n'))
-    console.log(labels)
+    labels = Object.keys(datafilter).map((item) => item.trim().split(' ').join('\n'))
     values = Object.values(datafilter)
   } else {
     // first render, no data
@@ -63,7 +62,9 @@ export const LineChartDemo = ({ data = {} }) => {
   }
 
   const datapointwidth = 60;
-  const chartWidth = datapointwidth * labels.length;
+  const dataWidth = datapointwidth * labels.length;
+  const chartWidth = Math.max(Const.screenWidth, dataWidth);
+
 
   const fadeAnim = useRef(new Animated.Value(0)).current; // initial value for opacity: 0
 
@@ -132,17 +133,20 @@ export const BarChartDemo = ({ data = {}}) => {
   let labels, values;
 
   if (Object.keys(datafilter).length != 0) {
-    labels = Object.keys(datafilter).map((item) => item.split(' ').join('\n'))
-    console.log(labels)
+    labels = Object.keys(datafilter).map((item) => item.trim().split(' ').join('\n'))
+    
     values = Object.values(datafilter)
   } else {
     // first render, no data
     labels = ["18-25", "25-30", "30-35", "35-40", "40-45", "45-50"]
     values = [20, 45, 28, 80, 99, 43]
   }
+  console.log(labels)
 
   const datapointwidth = 60;
-  const chartWidth = datapointwidth * labels.length;
+  const dataWidth = datapointwidth * labels.length;
+  const chartWidth = Math.max(Const.screenWidth, dataWidth);
+
   
   const fadeAnim = useRef(new Animated.Value(0)).current; // initial value for opacity: 0
 
