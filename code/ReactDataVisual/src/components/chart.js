@@ -97,7 +97,7 @@ export const LineChartKitDemo = ({ data = {} }) => {
 
   return (
     <View>
-      <Text style={{ fontSize: 16, fontWeight: 'bold', margin: 10 }}>Weather Forcast last 7 days</Text>
+      <Text style={{ fontSize: 16, fontWeight: 'bold', margin: 10 }}>Random Data Example</Text>
       <ScrollView horizontal={true}>
           <LineChart
             data={{
@@ -303,7 +303,7 @@ export const PieChartKitDemo = ({data = {}}) => {
 
   return (
     <View>
-      <Text style={{ fontSize: 16, fontWeight: 'bold', margin: 10 }}>Terminated Employee by Performance Score</Text>
+      <FilterComponent title='Field' data={Const.pieChartFilter} onChangeValue={setFilter} />
         <PieChart
           data={datafilter}
           width={Const.screenWidth - 20}
@@ -313,7 +313,6 @@ export const PieChartKitDemo = ({data = {}}) => {
           paddingLeft={'10'}
           backgroundColor={"none"}
         />
-      <FilterComponent title='Field' data={Const.pieChartFilter} onChangeValue={setFilter} />
     </View>
   );
 }
