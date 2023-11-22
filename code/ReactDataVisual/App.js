@@ -10,45 +10,79 @@ import * as Chart from './src/components/chart';
 // import third-party libraries, packages
 import { Dropdown } from 'react-native-element-dropdown'
 
+//    import for openmeteo
+import { fetchWeatherApi } from 'openmeteo';
+import 'react-native-url-polyfill/auto'
+import 'text-encoding-polyfill';
 
-/*    import for openmeteo
-
-  import { fetchWeatherApi } from 'openmeteo';
-  import 'react-native-url-polyfill/auto'
-  import 'text-encoding-polyfill'
-  const params = {
-    "latitude": 10.24,
-    "longitude": 106.38,
-    "hourly": ["temperature_2m", "relative_humidity_2m", "dew_point_2m"],
-    "timezone": "Asia/Singapore"
-  };
-  const url = "https://api.open-meteo.com/v1/forecast";
-
-*/
 const renderChart = (nameChart) => {
-  const [data, setData] = useState([])
+  // for human resource data
+  const [hrData, setHrData] = useState([])
+  // for weather forecast data
+  const [weatherData, setWeatherData] = useState(null)
 
-  const getData = async () => {
+  const getHRData = async () => {
     try {
-      const response = await fetch(Const.url);
+      const response = await fetch(Const.humanResourceURL);
       const json = await response.json();
-      setData(json)
+      setHrData(json)
     } catch (err) {
       console.error(err)
     }
   }
 
+  const getWeatherForecast = async () => {
+    try {
+      const responses = await fetchWeatherApi(Const.weatherForcastURL, Const.params);
+      return responses
+    } catch (error) {
+      console.error(error)
+    } 
+  }
+
+  const range = (start, stop, step) =>
+    Array.from({ length: (stop - start) / step }, (_, i) => start + (i * step));
+
   useEffect(() => {
-    getData();
+    getHRData();
+    getWeatherForecast()
+      .then((response) => {
+        console.log('weather forecast')
+        const data = response[0];
+        const hourly = data.hourly();
+        // reduce from every 1 hours from 1 week to every 4 hours a day
+        const weatherdata = {
+            time: range(Number(hourly.time()), Number(hourly.timeEnd()), hourly.interval()).map((t) => new Date((t + data.utcOffsetSeconds()) * 1000)).filter((_, i) => (i+1) % 6 == 0 ),
+            temperature_2m:     hourly.variables(0).valuesArray().filter((_, i) => (i+1) % 6 == 0 ),
+            relativeHumidity2m: hourly.variables(1).valuesArray().filter((_, i) => (i+1) % 6 == 0 ),
+            dewPoint2m:         hourly.variables(2).valuesArray().filter((_, i) => (i+1) % 6 == 0 ),
+        }
+            setWeatherData(weatherdata)
+      })
+      .catch((err) => {
+        console.error(err)
+      });
   }, [])
 
   switch (nameChart) {
-    case 'LineChart':
-      return <Chart.LineChartDemo data={data} />
-    case 'BarChart':
-      return <Chart.BarChartDemo data={data}/>
-    case 'PieChart':
-      return <Chart.PieChartDemo />
+    case 'LineChart-kit':
+      return <Chart.LineChartKitDemo data={weatherData} />
+    case 'BarChart-kit':
+      return <Chart.BarChartKitDemo data={hrData}/>
+    case 'PieChart-kit':
+      return <Chart.PieChartKitDemo data={hrData}/>
+    case 'LineChart-victory':
+      return <Chart.LineChartVictoryDemo  />
+    case 'BarChart-victory':
+      return <Chart.BarChartVictoryDemo data={hrData}/>
+    case 'PieChart-victory':
+      return <Chart.PieChartVictoryDemo data={hrData}/>
+    case 'LineChart-gifted':
+      return <Chart.LineChartGiftedDemo data={weatherData} />
+    case 'BarChart-gifted':
+      return <Chart.BarChartGiftedDemo data={hrData}/>
+    case 'PieChart-gifted':
+      return <Chart.PieChartGiftedDemo data={hrData}/>
     default:
       return;
   }
@@ -118,7 +152,6 @@ const App = () => {
     <ScrollView>
       <View style={styles.container}>
         <DropDownChart title='Dashboard'/>
-        <Text style={styles.header}> Colour Customization </Text>
       </View>
     </ScrollView>
   );

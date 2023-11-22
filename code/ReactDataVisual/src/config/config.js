@@ -4,13 +4,13 @@ export const chartConfig = {
   backgroundGradientTo: "white",
   backgroundGradientToOpacity: 0,
   backgroundColor: "white",
-  color: (opacity = 1) => `rgba(34, 139, 34, ${opacity})`,
+  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   strokeWidth: 2, // optional, default 3
   barPercentage: 0.5,
   useShadowColorFromDataset: false, // optional
-  fillShadowGradient: '#228b22',
+  fillShadowGradient: '#508d69',
   fillShadowGradientOpacity: 1,
   propsForVerticalLabels: {
-    rotation: -15,
+    rotation: 15,
   },
 };
