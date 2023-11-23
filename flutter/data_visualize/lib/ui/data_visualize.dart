@@ -11,7 +11,14 @@ class DataVisualizeScreen extends StatefulWidget {
 }
 
 class _DataVisualizeScreenState extends State<DataVisualizeScreen> {
-  List<String> temporaryBartypeDropdown = ["Line", "Column", "Pie"];
+  List<String> temporaryBartypeDropdown = [
+    "Line",
+    "Column",
+    "Pie",
+    "Area",
+    "Candle",
+    "Doughnut",
+  ];
   List<String> temporaryXAsisData = [
     "Employee_Name",
     "EmpID",
@@ -90,15 +97,17 @@ class _DataVisualizeScreenState extends State<DataVisualizeScreen> {
     "Absences"
   ];
 
+  late ChartBloc chartBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    chartBloc = BlocProvider.of<ChartBloc>(context);
+    chartBloc.add(ChartInitEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
-    ChartBloc chartBloc = BlocProvider.of<ChartBloc>(context);
-
-    @override
-    void initState() {
-      chartBloc.add(ChartInitEvent());
-    }
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -108,7 +117,11 @@ class _DataVisualizeScreenState extends State<DataVisualizeScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Dashboard"),
+                  const Text(
+                    "Dashboard",
+                    style: TextStyle(
+                        fontFamily: 'WorkSans', fontWeight: FontWeight.w500),
+                  ),
                   const SizedBox(
                     height: 10,
                   ),
@@ -139,8 +152,16 @@ class _DataVisualizeScreenState extends State<DataVisualizeScreen> {
                           return LineChart();
                         } else if (state is ChartBarDisplay) {
                           return ColumnChart();
+                        } else if (state is ChartAreaDisplay) {
+                          return AreaChart();
+                        } else if (state is ChartCandleDisplay) {
+                          return CandleChart();
+                        } else if (state is ChartDoughnutDisplay) {
+                          return DoughnutChart();
                         } else {
-                          return Placeholder();
+                          return SizedBox(
+                            height: 20,
+                          );
                         }
                       },
                     ),
@@ -199,8 +220,28 @@ Widget ColumnChart() {
 
 Widget PieChart() {
   return SfCircularChart(
+    legend: Legend(isVisible: true),
     series: <PieSeries<SalesData, String>>[
       PieSeries(
+        dataSource: <SalesData>[
+          SalesData('Jan', 35),
+          SalesData('Feb', 28),
+          SalesData('Mar', 34),
+          SalesData('Apr', 32),
+          SalesData('May', 40)
+        ],
+        xValueMapper: (SalesData sales, _) => sales.year,
+        yValueMapper: (SalesData sales, _) => sales.sales,
+      ),
+    ],
+  );
+}
+
+Widget DoughnutChart() {
+  return SfCircularChart(
+    legend: Legend(isVisible: true),
+    series: <DoughnutSeries<SalesData, String>>[
+      DoughnutSeries(
         dataSource: <SalesData>[
           SalesData('Jan', 35),
           SalesData('Feb', 28),
@@ -231,6 +272,46 @@ Widget LineChart() {
             xValueMapper: (SalesData sales, _) => sales.year,
             yValueMapper: (SalesData sales, _) => sales.sales)
       ]);
+}
+
+Widget AreaChart() {
+  return SfCartesianChart(
+    primaryXAxis: CategoryAxis(),
+    series: <AreaSeries<SalesData, String>>[
+      AreaSeries(
+          dataSource: <SalesData>[
+            SalesData('Jan', 35),
+            SalesData('Feb', 28),
+            SalesData('Mar', 34),
+            SalesData('Apr', 32),
+            SalesData('May', 40)
+          ],
+          xValueMapper: (SalesData sales, _) => sales.year,
+          yValueMapper: (SalesData sales, _) => sales.sales)
+    ],
+  );
+}
+
+Widget CandleChart() {
+  return SfCartesianChart(
+    primaryXAxis: CategoryAxis(),
+    series: <CandleSeries<SalesData, String>>[
+      CandleSeries(
+        dataSource: <SalesData>[
+          SalesData('Jan', 35),
+          SalesData('Feb', 28),
+          SalesData('Mar', 34),
+          SalesData('Apr', 32),
+          SalesData('May', 40)
+        ],
+        xValueMapper: (SalesData sales, _) => sales.year,
+        openValueMapper: (SalesData sales, _) => sales.sales + 5,
+        highValueMapper: (SalesData sales, _) => sales.sales + 15,
+        lowValueMapper: (SalesData sales, _) => sales.sales - 15,
+        closeValueMapper: (SalesData sales, _) => sales.sales,
+      )
+    ],
+  );
 }
 
 class SalesData {

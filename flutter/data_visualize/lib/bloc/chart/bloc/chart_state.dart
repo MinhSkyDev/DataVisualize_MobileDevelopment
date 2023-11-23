@@ -12,3 +12,9 @@ class ChartLineDisplay extends ChartState {}
 class ChartBarDisplay extends ChartState {}
 
 class ChartPieDisplay extends ChartState {}
+
+class ChartAreaDisplay extends ChartState {}
+
+class ChartCandleDisplay extends ChartState {}
+
+class ChartDoughnutDisplay extends ChartState {}
