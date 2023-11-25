@@ -18,6 +18,7 @@ class _DataVisualizeScreenState extends State<DataVisualizeScreen> {
     "Area",
     "Candle",
     "Doughnut",
+    "Radial",
   ];
   List<String> temporaryXAsisData = [
     "Employee_Name",
@@ -158,6 +159,8 @@ class _DataVisualizeScreenState extends State<DataVisualizeScreen> {
                           return CandleChart();
                         } else if (state is ChartDoughnutDisplay) {
                           return DoughnutChart();
+                        } else if (state is ChartRadialDisplay) {
+                          return RadialChart();
                         } else {
                           return SizedBox(
                             height: 20,
@@ -242,6 +245,25 @@ Widget DoughnutChart() {
     legend: Legend(isVisible: true),
     series: <DoughnutSeries<SalesData, String>>[
       DoughnutSeries(
+        dataSource: <SalesData>[
+          SalesData('Jan', 35),
+          SalesData('Feb', 28),
+          SalesData('Mar', 34),
+          SalesData('Apr', 32),
+          SalesData('May', 40)
+        ],
+        xValueMapper: (SalesData sales, _) => sales.year,
+        yValueMapper: (SalesData sales, _) => sales.sales,
+      ),
+    ],
+  );
+}
+
+Widget RadialChart() {
+  return SfCircularChart(
+    legend: Legend(isVisible: true),
+    series: <CircularSeries<SalesData, String>>[
+      RadialBarSeries(
         dataSource: <SalesData>[
           SalesData('Jan', 35),
           SalesData('Feb', 28),

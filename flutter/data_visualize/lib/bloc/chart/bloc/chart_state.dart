@@ -18,3 +18,5 @@ class ChartAreaDisplay extends ChartState {}
 class ChartCandleDisplay extends ChartState {}
 
 class ChartDoughnutDisplay extends ChartState {}
+
+class ChartRadialDisplay extends ChartState {}

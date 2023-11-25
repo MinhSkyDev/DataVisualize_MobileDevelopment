@@ -40,6 +40,8 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
       emit(ChartCandleDisplay());
     } else if (chartTypeChangeEvent.currentType == "Doughnut") {
       emit(ChartDoughnutDisplay());
+    } else if (chartTypeChangeEvent.currentType == "Radial") {
+      emit(ChartRadialDisplay());
     }
   }
 }
